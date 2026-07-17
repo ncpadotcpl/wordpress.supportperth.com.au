@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="en-AU"><head>
   <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <title>WordPress Support Perth | Builds, Fixes, Hosting &amp; Care</title>
   <meta name="description" content="WordPress builds, emergency fixes, hosting, security and monthly care from a senior engineer in Perth. Same-day response, no lock-in.">
   <link rel="canonical" href="https://wordpress.supportperth.com.au/">
@@ -309,8 +309,9 @@
     .trust-row .item {
       display: flex; align-items: center; gap: 7px;
       padding: 8px 16px; border-radius: var(--radius-pill);
-      border: 1px solid var(--border);
-      background: var(--surface);
+      border: 1px solid rgba(255,255,255,0.12);
+      background: var(--fg);
+      color: rgba(255,255,255,0.9);
     }
     .stars { color: var(--star); font-size: 15px; letter-spacing: 2px; }
 
@@ -535,29 +536,71 @@
       }
       .main-nav::-webkit-scrollbar { display: none; }
       .main-nav a { padding: 8px 0 12px; white-space: nowrap; }
-      .hero { padding: 72px 0 64px; }
-      .hero-flex { padding: 0 20px; } /* stays aligned with the 20px container gutter */
-      /* Mobile-only: value words stacked left, CTAs right-justified — this is
-         the layout that was accidentally applied everywhere; now scoped here. */
-      .hero-mid { flex-direction: row; justify-content: space-between; align-items: center; }
-      .lead-stack { flex-direction: column; gap: 6px; }
-      .lead-stack li + li::before { display: none; }
-      .hero .hero-ctas { flex-direction: column; align-items: flex-end; }
-      /* Mobile keeps only the strongest proof pill — the 5.0 Google rating */
+      .hero { padding: 56px 0 48px; min-height: auto; }
+      .hero-flex { padding: 0 20px; }
+      .hero-inner { padding: 28px 24px; border-radius: 20px; }
+      .hero h1 { font-size: clamp(2rem, 8vw, 3rem); margin-bottom: 20px; }
+      .hero-ctas { gap: 12px; margin-bottom: 28px; }
+      .hero-ctas .btn { padding: 14px 28px; font-size: 15px; min-height: 50px; width: 100%; }
+      .trust-row { justify-content: center; }
+      .trust-row .item { padding: 6px 12px; font-size: 13px; }
       .trust-row .item:nth-child(n+2) { display: none; }
-      section { padding: 64px 0; }
+      .scroll-cue { display: none; }
+      section { padding: 56px 0; }
       .container { padding: 0 20px; }
-      .svc-secondary { grid-template-columns: 1fr; }
-      .svc-card { padding: 28px 24px; }
-      .emergency { padding: 52px 0; }
-      .quote { padding: 76px 0; }
-      .final-cta { padding: 84px 0; }
-      .faq-list summary { padding: 22px 36px 22px 0; }
-    }
-    @media (max-width: 560px) {
-      .final-cta .hero-ctas { flex-direction: column; align-items: stretch; }
+      .section-head { margin-bottom: 32px; }
+      .section-head h2 { font-size: clamp(1.5rem, 6vw, 2rem); }
+      .svc-featured { gap: 14px; }
+      .svc-secondary { grid-template-columns: 1fr; gap: 10px; }
+      .svc-card { padding: 24px 20px; }
+      .svc-card h3 { font-size: 1.2rem; }
+      .svc-card p { font-size: 15px; }
+      .svc-row { padding: 14px 16px; }
+      .svc-row h3 { font-size: 14px; }
+      .svc-row p { font-size: 13px; }
+      .emergency { padding: 44px 0; }
+      .emergency h2 { font-size: clamp(1.4rem, 5vw, 1.8rem); }
+      .emergency-head { gap: 10px; margin-bottom: 20px; }
+      .symptom-chips { gap: 10px; }
+      .chip { padding: 11px 18px; font-size: 14px; }
+      .chip code { font-size: 12px; }
+      .quote { padding: 64px 0; }
+      .quote blockquote { font-size: clamp(1.3rem, 5vw, 1.8rem); max-width: 100%; margin: 18px auto 20px; }
+      .quote .stars { font-size: 20px; letter-spacing: 3px; }
+      .quote .attrib { font-size: 14px; }
+      .faq-list summary { padding: 18px 36px 18px 0; font-size: 1rem; }
+      .faq-list .answer { font-size: 15px; }
+      .final-cta { padding: 64px 0; }
+      .final-cta h2 { font-size: clamp(1.6rem, 6vw, 2.2rem); margin-bottom: 14px; }
+      .final-cta p { font-size: 1rem; margin-bottom: 28px; }
+      .final-cta .hero-ctas { flex-direction: column; align-items: stretch; gap: 12px; }
       .final-cta .hero-ctas .btn { width: 100%; }
-      .trust-row { font-size: 14px; }
+      footer .container { flex-direction: column; align-items: center; text-align: center; gap: 12px; }
+      footer { padding: 32px 0; font-size: 13px; }
+    }
+    /* Small phones — tighter spacing, ensure nothing overflows */
+    @media (max-width: 400px) {
+      h1 { font-size: clamp(1.75rem, 9vw, 2.5rem); }
+      .hero-inner { padding: 24px 20px; }
+      .hero-ctas .btn { padding: 12px 20px; font-size: 14px; }
+      .chip { padding: 10px 14px; font-size: 13px; }
+      .chip code { font-size: 11px; }
+      .svc-card { padding: 20px 18px; }
+      .quote blockquote { font-size: clamp(1.15rem, 5vw, 1.5rem); }
+      .quote .quote-blue, .quote .quote-outline { padding: 2px 10px; border-radius: 10px; }
+      #modal-card { padding: 24px 20px; }
+    }
+    /* Touch-friendly: increase tap targets on coarse pointers */
+    @media (pointer: coarse) {
+      .main-nav a { min-height: 44px; display: flex; align-items: center; }
+      .chip { min-height: 48px; }
+      .faq-list summary { min-height: 52px; }
+    }
+    /* Safe area insets for notched devices */
+    @supports (padding: env(safe-area-inset-bottom)) {
+      footer { padding-bottom: max(32px, env(safe-area-inset-bottom)); }
+      #modal-card { padding-bottom: max(32px, env(safe-area-inset-bottom)); }
+      .site-header { padding-top: env(safe-area-inset-top); }
     }
   </style>
 </head>
@@ -581,51 +624,51 @@
   <main id="main">
 
   <!-- ── Hero ────────────────────────────────────────────────────── -->
-  <section class="hero" data-od-id="hero" style="background-color: rgb(255, 255, 255);">
+  <section class="hero" data-od-id="hero">
     <svg class="hero-mesh" viewBox="0 0 1440 700" fill="none" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
       <g class="mesh-lines" stroke="#006d9a" stroke-width="1.2">
-        <line x1="60" y1="120" x2="220" y2="60"/><line x1="220" y1="60" x2="380" y2="160"/>
-        <line x1="380" y1="160" x2="160" y2="320"/><line x1="160" y1="320" x2="90" y2="540"/>
-        <line x1="160" y1="320" x2="340" y2="420"/><line x1="340" y1="420" x2="90" y2="540"/>
-        <line x1="380" y1="160" x2="520" y2="80"/><line x1="520" y1="80" x2="560" y2="300"/>
-        <line x1="380" y1="160" x2="560" y2="300"/><line x1="340" y1="420" x2="480" y2="560"/>
-        <line x1="480" y1="560" x2="560" y2="300"/><line x1="520" y1="80" x2="700" y2="180"/>
-        <line x1="700" y1="180" x2="560" y2="300"/><line x1="700" y1="180" x2="920" y2="100"/>
-        <line x1="560" y1="300" x2="760" y2="440"/><line x1="760" y1="440" x2="480" y2="560"/>
-        <line x1="760" y1="440" x2="680" y2="620"/><line x1="680" y1="620" x2="480" y2="560"/>
-        <line x1="920" y1="100" x2="960" y2="340"/><line x1="960" y1="340" x2="760" y2="440"/>
-        <line x1="920" y1="100" x2="1120" y2="200"/><line x1="1120" y1="200" x2="960" y2="340"/>
-        <line x1="960" y1="340" x2="880" y2="560"/><line x1="880" y1="560" x2="680" y2="620"/>
-        <line x1="1120" y1="200" x2="1320" y2="80"/><line x1="1320" y1="80" x2="1430" y2="180"/>
-        <line x1="1120" y1="200" x2="1360" y2="320"/><line x1="1360" y1="320" x2="1430" y2="180"/>
-        <line x1="1360" y1="320" x2="1180" y2="460"/><line x1="1180" y1="460" x2="960" y2="340"/>
-        <line x1="1180" y1="460" x2="1300" y2="580"/><line x1="1300" y1="580" x2="1080" y2="640"/>
-        <line x1="1080" y1="640" x2="880" y2="560"/><line x1="1180" y1="460" x2="1080" y2="640"/>
-        <line x1="1360" y1="320" x2="1300" y2="580"/>
+        <line x1="60" y1="120" x2="220" y2="60"></line><line x1="220" y1="60" x2="380" y2="160"></line>
+        <line x1="380" y1="160" x2="160" y2="320"></line><line x1="160" y1="320" x2="90" y2="540"></line>
+        <line x1="160" y1="320" x2="340" y2="420"></line><line x1="340" y1="420" x2="90" y2="540"></line>
+        <line x1="380" y1="160" x2="520" y2="80"></line><line x1="520" y1="80" x2="560" y2="300"></line>
+        <line x1="380" y1="160" x2="560" y2="300"></line><line x1="340" y1="420" x2="480" y2="560"></line>
+        <line x1="480" y1="560" x2="560" y2="300"></line><line x1="520" y1="80" x2="700" y2="180"></line>
+        <line x1="700" y1="180" x2="560" y2="300"></line><line x1="700" y1="180" x2="920" y2="100"></line>
+        <line x1="560" y1="300" x2="760" y2="440"></line><line x1="760" y1="440" x2="480" y2="560"></line>
+        <line x1="760" y1="440" x2="680" y2="620"></line><line x1="680" y1="620" x2="480" y2="560"></line>
+        <line x1="920" y1="100" x2="960" y2="340"></line><line x1="960" y1="340" x2="760" y2="440"></line>
+        <line x1="920" y1="100" x2="1120" y2="200"></line><line x1="1120" y1="200" x2="960" y2="340"></line>
+        <line x1="960" y1="340" x2="880" y2="560"></line><line x1="880" y1="560" x2="680" y2="620"></line>
+        <line x1="1120" y1="200" x2="1320" y2="80"></line><line x1="1320" y1="80" x2="1430" y2="180"></line>
+        <line x1="1120" y1="200" x2="1360" y2="320"></line><line x1="1360" y1="320" x2="1430" y2="180"></line>
+        <line x1="1360" y1="320" x2="1180" y2="460"></line><line x1="1180" y1="460" x2="960" y2="340"></line>
+        <line x1="1180" y1="460" x2="1300" y2="580"></line><line x1="1300" y1="580" x2="1080" y2="640"></line>
+        <line x1="1080" y1="640" x2="880" y2="560"></line><line x1="1180" y1="460" x2="1080" y2="640"></line>
+        <line x1="1360" y1="320" x2="1300" y2="580"></line>
       </g>
       <g>
-        <circle cx="60" cy="120" r="4" fill="#8b5cf6" opacity="0.85"/>
-        <circle cx="220" cy="60" r="5" fill="#f97316" opacity="0.9"/>
-        <circle cx="380" cy="160" r="6" fill="#06b6d4" opacity="0.85"/>
-        <circle cx="160" cy="320" r="5" fill="#fbbc04" opacity="0.9"/>
-        <circle cx="340" cy="420" r="4" fill="#ec4899" opacity="0.85"/>
-        <circle cx="90" cy="540" r="4" fill="#16a34a" opacity="0.9"/>
-        <circle cx="520" cy="80" r="4" fill="#3b82f6" opacity="0.85"/>
-        <circle cx="560" cy="300" r="7" fill="#f97316" opacity="0.9"/>
-        <circle cx="480" cy="560" r="5" fill="#8b5cf6" opacity="0.85"/>
-        <circle cx="700" cy="180" r="5" fill="#fbbc04" opacity="0.9"/>
-        <circle cx="760" cy="440" r="6" fill="#16a34a" opacity="0.9"/>
-        <circle cx="680" cy="620" r="4" fill="#ec4899" opacity="0.85"/>
-        <circle cx="920" cy="100" r="5" fill="#06b6d4" opacity="0.85"/>
-        <circle cx="960" cy="340" r="8" fill="#f97316" opacity="0.9"/>
-        <circle cx="880" cy="560" r="5" fill="#fbbc04" opacity="0.9"/>
-        <circle cx="1120" cy="200" r="6" fill="#16a34a" opacity="0.9"/>
-        <circle cx="1180" cy="460" r="5" fill="#3b82f6" opacity="0.85"/>
-        <circle cx="1080" cy="640" r="4" fill="#f97316" opacity="0.9"/>
-        <circle cx="1320" cy="80" r="4" fill="#ec4899" opacity="0.85"/>
-        <circle cx="1360" cy="320" r="6" fill="#fbbc04" opacity="0.9"/>
-        <circle cx="1300" cy="580" r="5" fill="#16a34a" opacity="0.9"/>
-        <circle cx="1430" cy="180" r="4" fill="#8b5cf6" opacity="0.85"/>
+        <circle cx="60" cy="120" r="4" fill="#8b5cf6" opacity="0.85"></circle>
+        <circle cx="220" cy="60" r="5" fill="#f97316" opacity="0.9"></circle>
+        <circle cx="380" cy="160" r="6" fill="#06b6d4" opacity="0.85"></circle>
+        <circle cx="160" cy="320" r="5" fill="#fbbc04" opacity="0.9"></circle>
+        <circle cx="340" cy="420" r="4" fill="#ec4899" opacity="0.85"></circle>
+        <circle cx="90" cy="540" r="4" fill="#16a34a" opacity="0.9"></circle>
+        <circle cx="520" cy="80" r="4" fill="#3b82f6" opacity="0.85"></circle>
+        <circle cx="560" cy="300" r="7" fill="#f97316" opacity="0.9"></circle>
+        <circle cx="480" cy="560" r="5" fill="#8b5cf6" opacity="0.85"></circle>
+        <circle cx="700" cy="180" r="5" fill="#fbbc04" opacity="0.9"></circle>
+        <circle cx="760" cy="440" r="6" fill="#16a34a" opacity="0.9"></circle>
+        <circle cx="680" cy="620" r="4" fill="#ec4899" opacity="0.85"></circle>
+        <circle cx="920" cy="100" r="5" fill="#06b6d4" opacity="0.85"></circle>
+        <circle cx="960" cy="340" r="8" fill="#f97316" opacity="0.9"></circle>
+        <circle cx="880" cy="560" r="5" fill="#fbbc04" opacity="0.9"></circle>
+        <circle cx="1120" cy="200" r="6" fill="#16a34a" opacity="0.9"></circle>
+        <circle cx="1180" cy="460" r="5" fill="#3b82f6" opacity="0.85"></circle>
+        <circle cx="1080" cy="640" r="4" fill="#f97316" opacity="0.9"></circle>
+        <circle cx="1320" cy="80" r="4" fill="#ec4899" opacity="0.85"></circle>
+        <circle cx="1360" cy="320" r="6" fill="#fbbc04" opacity="0.9"></circle>
+        <circle cx="1300" cy="580" r="5" fill="#16a34a" opacity="0.9"></circle>
+        <circle cx="1430" cy="180" r="4" fill="#8b5cf6" opacity="0.85"></circle>
       </g>
     </svg>
     <script>
@@ -649,7 +692,7 @@
     </script>
     <div class="hero-flex">
     <div class="hero-inner">
-      <h1 data-od-id="hero-headline">Quality WordPress support in Perth.</h1>
+      <h1 data-od-id="hero-headline" style="color: rgb(255, 255, 255);">Quality WordPress support in Perth.</h1>
       <div class="hero-ctas">
         <a href="#contact" class="btn btn-primary" data-od-id="hero-cta-primary">Get in touch</a>
         <a href="tel:1300769337" class="btn btn-call" data-od-id="hero-cta-call">Call 1300 769 337</a>
