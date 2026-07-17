@@ -1,0 +1,85 @@
+{
+  "summary": {
+    "health_score": 74,
+    "health_score_post_fix": 80,
+    "business_type": "Local Service (service-area business) — professional IT/web services",
+    "top_findings": [
+      "Missing _headers security file (fixed: CSP/HSTS/nosniff/Referrer-Policy shipped)",
+      "Render-blocking Google Fonts CSS = top LCP/CLS risk (fixed: self-hosted latin WOFF2 + preload)",
+      "H1 lacked 'Perth' geo-modifier (fixed)",
+      "Thin content depth for hosting / malware-removal / developer queries (backlog)",
+      "GBP strategy unresolved — must NOT create a second listing (owner action)"
+    ],
+    "quick_wins": [
+      "Title 71→57 chars, meta description 157→133 chars (fixed)",
+      "Schema telephone normalized to visible format 1300 769 337 (fixed)",
+      "Founder Person node + entity name in footer (fixed)",
+      "Reciprocal link from supportperth.com.au (owner action, 5 minutes, biggest indexation lever)"
+    ]
+  },
+  "categories": [
+    {
+      "name": "Technical SEO",
+      "score": 80,
+      "score_post_fix": 88,
+      "what_works": ["Fully static HTML, zero JS-render dependency", "canonical = sitemap = og:url exact match", "Clean heading hierarchy, single h1", "robots.txt correctly blocks /api/ and declares sitemap", "Zero <img> tags — no image CLS/LCP weight"],
+      "findings": [
+        {"title": "No _headers file on Cloudflare Pages deploy", "severity": "Critical", "description": "Deploy would ship with zero security headers", "recommendation": "FIXED — _headers created with CSP, HSTS, nosniff, Referrer-Policy, Permissions-Policy, frame-ancestors, immutable font caching"},
+        {"title": "Render-blocking third-party font stylesheet", "severity": "High", "description": "fonts.googleapis.com CSS blocked first paint; hero H1 is the LCP element", "recommendation": "FIXED — Ubuntu 400/500/700 latin subsets self-hosted (43KB), preloaded, font-display swap"},
+        {"title": "Title tag 71 chars with double branding", "severity": "High", "description": "Past ~580px truncation; 'Support Perth' twice", "recommendation": "FIXED — 57 chars, single brand mention"},
+        {"title": "Rate limiting fails open without KV binding", "severity": "Medium", "description": "functions/api/contact.js skips rate limiting if RATE_LIMIT binding absent", "recommendation": "OWNER — bind KV namespace pre-launch; consider Turnstile"},
+        {"title": "Mobile nav hidden below 760px, no hamburger", "severity": "Medium", "description": "Section links vanish; sticky header CTA remains", "recommendation": "ACCEPTED trade-off for single-pager; revisit if bounce data suggests otherwise"},
+        {"title": "Sitemap lastmod hand-edited", "severity": "Low", "description": "No mechanism keeps it current", "recommendation": "Wire to deploy pipeline"}
+      ]
+    },
+    {
+      "name": "Schema / Structured Data",
+      "score": 92,
+      "score_post_fix": 95,
+      "what_works": ["5-node @graph, zero validation errors", "FAQ content parity verbatim (6/6)", "Research-backed omission of self-serving aggregateRating", "Cross-domain @id link to apex #organization"],
+      "findings": [
+        {"title": "Telephone format mismatch schema vs page", "severity": "Medium", "description": "+61 1300 769 337 is not a valid AU inbound format and diverged from visible text", "recommendation": "FIXED — normalized to 1300 769 337"},
+        {"title": "No sameAs / openingHours / address", "severity": "Medium", "description": "Entity-consolidation signals missing; address defensible for SAB", "recommendation": "OWNER — add GBP Maps URL + socials as sameAs; hours if policy exists; partial PostalAddress only if it matches GBP"},
+        {"title": "Cross-domain @id unverifiable offline", "severity": "Info", "description": "https://supportperth.com.au/#organization must match byte-for-byte on the live apex", "recommendation": "Verify with Rich Results Test post-launch"}
+      ]
+    },
+    {
+      "name": "Content Quality",
+      "score": 60,
+      "score_post_fix": 64,
+      "what_works": ["Real testimonial + real 5.0/25 rating", "Operationally specific FAQ answers (citable passages)", "Symptom chips use literal WordPress error strings", "Readability grade 8-9, jargon-light"],
+      "findings": [
+        {"title": "H1 omitted 'Perth'", "severity": "High", "description": "Primary geo-modifier absent from highest-weight element", "recommendation": "FIXED"},
+        {"title": "Thin coverage: hosting / malware / developer queries", "severity": "High", "description": "Two-sentence cards vs competitors' dedicated pages", "recommendation": "BACKLOG — deepen on-page copy now; child pages month 2"},
+        {"title": "Aaron has no entity/bio", "severity": "Medium", "description": "Named twice, no credentials or Person schema", "recommendation": "PARTIAL FIX — founder Person node added; visible micro-bio needs real career facts from owner"},
+        {"title": "No quantified facts in FAQ answers", "severity": "Medium", "description": "AI answer engines favour concrete numbers", "recommendation": "OWNER — add response-time numbers only if operationally true"}
+      ]
+    },
+    {
+      "name": "Local SEO",
+      "score": 65,
+      "score_post_fix": 72,
+      "what_works": ["Correct SAB handling (no fake address)", "Reviews correctly text-only, not schema", "parentOrganization linkage to established brand"],
+      "findings": [
+        {"title": "Second GBP listing would be duplicate-listing spam risk", "severity": "Critical", "description": "Could trigger re-verification of the existing 5.0/25 profile", "recommendation": "OWNER — one GBP; add WordPress services/categories to it"},
+        {"title": "Geo-thin body copy", "severity": "High", "description": "2 Perth mentions across the page", "recommendation": "FIXED — services intro + footer now carry Perth, WA (kept to 2 additions to avoid stuffing)"},
+        {"title": "No reciprocal link from apex", "severity": "High", "description": "New host inherits no authority without it", "recommendation": "OWNER — add services-section link on supportperth.com.au"},
+        {"title": "No GBP/review link on page", "severity": "Medium", "description": "5.0/25 claim not verifiable in one click", "recommendation": "OWNER — add 'See our reviews' Maps link"}
+      ]
+    }
+  ],
+  "action_plan": {
+    "phases": [
+      {"name": "Phase 1: Pre-launch (owner)", "timeframe": "Week 1", "items": ["Bind RATE_LIMIT KV + env secrets", "Deploy page as index.html at /", "Paste GA4/Ads snippet", "GBP: add WP services to existing listing", "Apex link to subdomain"]},
+      {"name": "Phase 2: Launch week", "timeframe": "Week 1-2", "items": ["Search Console property + sitemap", "Rich Results Test live", "Verify served headers", "Live technical re-audit", "sameAs + hours + review link", "End-to-end contact form test"]},
+      {"name": "Phase 3: Content & authority", "timeframe": "Month 2", "items": ["Deepen thin services", "Child pages: hosting, malware removal", "Aaron micro-bio", "Niche citations", "Review velocity"]},
+      {"name": "Phase 4: Monitoring", "timeframe": "Ongoing", "items": ["CrUX at 28 days", "GSC query coverage", "lastmod discipline", "Cannibalisation guard"]}
+    ]
+  },
+  "artifacts": {
+    "findings_dir": "docs/seo-audit/",
+    "research": "docs/seo-research-schema-sitemap.md",
+    "screenshots_dir": null,
+    "limitations": "Pre-deployment file-only audit; no live crawl, CrUX, GSC, GA4, backlinks, or browser capture"
+  }
+}

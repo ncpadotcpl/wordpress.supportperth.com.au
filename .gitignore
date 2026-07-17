@@ -1,0 +1,31 @@
+# Dependencies
+node_modules/
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Editor
+.vscode/
+.idea/
+
+# Temp files
+*.tmp
+*.bak
+*.swp
+
+# Drawing files (large, not needed in repo)
+drawing-*.png
+
+# HyperFrames cache
+.hyperframes-cache/
+
+# Environment
+.env
+.env.local
+
+# Open Design internals
+.file-versions/
+.impeccable/
+*.artifact.json
+image.png
