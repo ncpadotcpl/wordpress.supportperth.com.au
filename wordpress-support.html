@@ -429,70 +429,121 @@
     footer a { color: var(--fg); font-weight: 500; transition: color 0.2s ease; }
     footer a:hover { color: var(--accent-hover); }
 
-    /* ── Contact modal (ported contract from supportperth.com.au) ─ */
+    /* ── Contact funnel — native dialog + two-step capture ───────── */
     .hidden { display: none !important; }
-    #contact-modal { position: fixed; inset: 0; z-index: 200; display: flex; align-items: center; justify-content: center; padding: 16px; }
-    #modal-backdrop {
-      position: absolute; inset: 0; background: rgba(0,0,0,0.5);
-      backdrop-filter: blur(4px); -webkit-backdrop-filter: blur(4px);
-      transition: opacity 0.2s ease;
-    }
-    #modal-card {
-      position: relative; width: 100%; max-width: 430px; background: var(--bg);
+
+    /* Native dialog resets and styling */
+    #contact-dialog {
+      border: none; padding: 0; background: transparent; max-width: 460px; width: calc(100% - 32px);
       border-radius: var(--radius-card); box-shadow: 0 24px 64px rgba(12,13,15,0.28);
-      padding: 32px; transition: all 0.3s ease-out;
+      position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); margin: 0;
     }
-    .opacity-0 { opacity: 0; }
-    .opacity-100 { opacity: 1; }
-    .translate-y-6 { transform: translateY(24px); }
-    .translate-y-0 { transform: translateY(0); }
-    #modal-close-btn {
+    #contact-dialog::backdrop {
+      background: rgba(0,0,0,0.5); backdrop-filter: blur(4px); -webkit-backdrop-filter: blur(4px);
+    }
+    #contact-dialog[open] { animation: dialog-in 0.25s ease-out forwards; }
+    @keyframes dialog-in { from { opacity: 0; transform: translate(-50%, calc(-50% + 16px)); } to { opacity: 1; transform: translate(-50%, -50%); } }
+    .dialog-card {
+      background: var(--bg); border-radius: var(--radius-card); padding: 32px; position: relative;
+    }
+    .dialog-close {
       position: absolute; top: 10px; right: 10px; background: none; border: none; cursor: pointer;
-      color: var(--muted); opacity: 0.6; transition: opacity 0.2s ease; padding: 10px;
+      color: var(--muted); opacity: 0.6; transition: opacity 0.2s ease; padding: 10px; min-width: 44px; min-height: 44px;
+      display: flex; align-items: center; justify-content: center;
     }
-    #modal-close-btn:hover { opacity: 1; }
-    #modal-heading { font-size: 1.5rem; letter-spacing: -0.01em; margin-bottom: 4px; }
-    .modal-sub { font-size: 14px; color: var(--muted); margin-bottom: 22px; }
-    .modal-field { margin-bottom: 16px; }
-    .modal-field label { display: block; font-size: 14px; font-weight: 700; margin-bottom: 5px; letter-spacing: 0.01em; }
-    .modal-field label .opt { font-weight: 400; color: var(--muted); }
-    .modal-field input {
+    .dialog-close:hover { opacity: 1; }
+    .dialog-heading { font-size: 1.5rem; letter-spacing: -0.01em; margin-bottom: 4px; }
+    .dialog-sub { font-size: 14px; color: var(--muted); margin-bottom: 22px; line-height: 1.5; }
+
+    /* Two-step form */
+    .funnel-form { position: relative; }
+    .funnel-step { transition: opacity 0.2s ease; }
+    .funnel-step[hidden] { display: none; }
+    .funnel-field { margin-bottom: 16px; }
+    .funnel-field label { display: block; font-size: 14px; font-weight: 700; margin-bottom: 5px; letter-spacing: 0.01em; }
+    .funnel-field .opt { font-weight: 400; color: var(--muted); }
+    .funnel-field input, .funnel-field select, .funnel-field textarea {
       width: 100%; border: 1.5px solid var(--border); border-radius: 10px; padding: 12px 15px;
       font-size: 16px; font-family: var(--font); transition: border-color 0.2s ease, box-shadow 0.2s ease;
+      background: var(--bg); color: var(--fg);
     }
-    .modal-field input:focus { outline: none; border-color: var(--accent); box-shadow: 0 0 0 3px rgba(0,109,154,0.15); }
+    .funnel-field input::placeholder { color: #64748b; } /* 4.5:1 contrast on white */
+    .funnel-field input:focus, .funnel-field select:focus, .funnel-field textarea:focus {
+      outline: none; border-color: var(--accent); box-shadow: 0 0 0 3px rgba(0,109,154,0.15);
+    }
+    .funnel-field textarea { resize: vertical; min-height: 80px; }
     .field-error { border-color: #dc2626 !important; }
-    .hp-wrap { position: absolute; left: -9999px; }
-    #modal-form-status {
+    .hp-wrap { position: absolute; left: -9999px; width: 1px; height: 1px; overflow: hidden; }
+
+    /* Topic pill for context handoff */
+    .topic-pill {
+      display: none; align-items: center; gap: 8px; padding: 6px 12px 6px 14px;
+      background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-pill);
+      font-size: 13px; margin-bottom: 16px; max-width: fit-content;
+    }
+    .topic-pill.show { display: inline-flex; }
+    .topic-pill button {
+      background: none; border: none; cursor: pointer; color: var(--muted); font-size: 16px;
+      line-height: 1; padding: 2px 4px; min-width: 24px; min-height: 24px; border-radius: 50%;
+      transition: background 0.15s ease, color 0.15s ease;
+    }
+    .topic-pill button:hover { background: var(--border); color: var(--fg); }
+
+    /* Form status and buttons */
+    .funnel-status {
       border-radius: 10px; padding: 12px 16px; font-size: 14px; font-weight: 500;
       display: flex; align-items: flex-start; gap: 10px; margin-bottom: 16px;
       background: #fef2f2; border: 1px solid #fecaca; color: #991b1b;
     }
-    #modal-form-status a { text-decoration: underline; font-weight: 700; }
-    .modal-submit {
-      width: 100%; border: none; background: var(--accent); color: #ffffff;
-      font-family: var(--font); font-weight: 700; font-size: 16px; letter-spacing: 0.02em;
-      border-radius: var(--radius-pill); padding: 15px; min-height: 50px; cursor: pointer;
-      box-shadow: var(--shadow-soft); transition: all 0.2s ease;
+    .funnel-status[hidden] { display: none; }
+    .funnel-status a { text-decoration: underline; font-weight: 700; }
+    .funnel-submit, .funnel-skip {
+      width: 100%; border: none; font-family: var(--font); font-weight: 700; font-size: 16px;
+      letter-spacing: 0.02em; border-radius: var(--radius-pill); padding: 15px; min-height: 50px;
+      cursor: pointer; transition: all 0.2s ease;
     }
-    .modal-submit:hover:not(:disabled) { background: var(--accent-hover); transform: translateY(-2px); box-shadow: var(--shadow-lift); }
-    .modal-submit:disabled { opacity: 0.75; cursor: default; }
-    #modal-success { text-align: center; padding: 32px 0; }
+    .funnel-submit {
+      background: var(--accent); color: #ffffff; box-shadow: var(--shadow-soft);
+    }
+    .funnel-submit:hover:not(:disabled) { background: var(--accent-hover); transform: translateY(-2px); box-shadow: var(--shadow-lift); }
+    .funnel-submit:disabled { opacity: 0.75; cursor: default; }
+    .funnel-skip {
+      background: transparent; color: var(--muted); margin-top: 10px; padding: 12px;
+      min-height: 44px; border: 1px solid var(--border);
+    }
+    .funnel-skip:hover { border-color: var(--muted); color: var(--fg); }
+
+    /* Step 2 confirmation header */
+    .step2-confirm {
+      background: rgba(22,163,74,0.08); border: 1px solid rgba(22,163,74,0.2); border-radius: 10px;
+      padding: 14px 16px; margin-bottom: 20px; display: flex; align-items: flex-start; gap: 12px;
+    }
+    .step2-confirm svg { flex-shrink: 0; color: var(--success); }
+    .step2-confirm p { font-size: 14px; color: var(--fg); line-height: 1.45; }
+    .step2-confirm strong { font-weight: 700; }
+
+    /* Success state */
+    .funnel-success { text-align: center; padding: 32px 0; }
+    .funnel-success[hidden] { display: none; }
     .success-tick {
       width: 64px; height: 64px; margin: 0 auto 16px; border-radius: 50%;
       background: rgba(22,163,74,0.12); display: flex; align-items: center; justify-content: center;
     }
     .success-tick svg { width: 32px; height: 32px; color: var(--success); }
-    #modal-success h3 { font-size: 1.25rem; margin-bottom: 8px; }
-    #modal-success p { font-size: 14px; color: var(--muted); }
+    .funnel-success h3 { font-size: 1.25rem; margin-bottom: 8px; }
+    .funnel-success p { font-size: 14px; color: var(--muted); }
+
+    /* Inline form (final CTA section) */
+    .inline-funnel {
+      max-width: 420px; margin: 0 auto; background: var(--bg); border: 1px solid var(--border);
+      border-radius: var(--radius-card); padding: 28px; text-align: left;
+    }
+    .inline-funnel .funnel-field { margin-bottom: 14px; }
+    .inline-reassure { font-size: 13px; color: var(--muted); margin-top: 12px; text-align: center; }
+
     .spin { animation: spin 0.8s linear infinite; }
     @keyframes spin { to { transform: rotate(360deg); } }
 
-    .modal-symptom {
-      display: inline-block; font-size: 13px; letter-spacing: 0.01em; color: var(--fg);
-      background: var(--surface); border: 1px solid var(--border);
-      border-radius: var(--radius-pill); padding: 6px 14px; margin-bottom: 14px;
-    }
     .skip-link {
       position: absolute; left: -9999px; top: 0; z-index: 300;
       background: var(--fg); color: var(--bg); padding: 10px 18px;
@@ -831,14 +882,69 @@
     </div>
   </section>
 
-  <!-- ── Final CTA ───────────────────────────────────────────────── -->
-  <section class="final-cta" data-od-id="final-cta">
+  <!-- ── Final CTA with inline funnel ────────────────────────────── -->
+  <section class="final-cta" id="contact" data-od-id="final-cta">
     <div class="container">
       <h2 data-od-id="final-cta-heading">Tell us about your WordPress site</h2>
       <p>A free, no-obligation chat with me, Aaron — not a ticket queue. Usually answered the same day.</p>
-      <div class="hero-ctas">
-        <a href="#contact" class="btn btn-primary" data-od-id="final-cta-button">Get in touch</a>
-        <a href="tel:1300769337" class="btn btn-ghost">Call 1300 769 337</a>
+
+      <!-- Inline funnel form — keyboard users complete here; pointer users hand off to modal -->
+      <div class="inline-funnel" id="inline-funnel" data-od-id="inline-funnel">
+        <form id="inline-form" class="funnel-form" novalidate>
+          <div class="hp-wrap" aria-hidden="true">
+            <input type="text" name="website_url" tabindex="-1" autocomplete="off">
+          </div>
+
+          <!-- Step 1: single contact field -->
+          <div class="funnel-step" data-step="1" id="inline-step1">
+            <div class="funnel-field">
+              <label for="inline-contact">Email or phone</label>
+              <input type="text" id="inline-contact" name="contact" required autofocus
+                     placeholder="you@business.com.au or 04XX XXX XXX"
+                     autocapitalize="none" spellcheck="false" autocomplete="email">
+            </div>
+            <button type="submit" class="funnel-submit">Get in touch</button>
+          </div>
+
+          <!-- Step 2: optional enrichment -->
+          <div class="funnel-step" data-step="2" id="inline-step2" hidden>
+            <div class="step2-confirm">
+              <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"></path></svg>
+              <p><strong>Got it — we'll be in touch the same business day.</strong><br>These help us come prepared (all optional):</p>
+            </div>
+            <div class="funnel-field">
+              <label for="inline-name">Your name <span class="opt">(optional)</span></label>
+              <input type="text" id="inline-name" name="name" placeholder="e.g. Sarah" autocomplete="given-name">
+            </div>
+            <div class="funnel-field">
+              <label for="inline-need">What do you need help with? <span class="opt">(optional)</span></label>
+              <select id="inline-need" name="need">
+                <option value="">Select one…</option>
+                <option value="emergency">Site is down / broken right now</option>
+                <option value="maintenance">Ongoing maintenance</option>
+                <option value="build">New site or rebuild</option>
+                <option value="hosting">Hosting or migration</option>
+                <option value="security">Security or malware</option>
+                <option value="speed">Speed / Core Web Vitals</option>
+                <option value="other">Something else</option>
+              </select>
+            </div>
+            <button type="submit" class="funnel-submit">Send</button>
+            <button type="button" class="funnel-skip" data-skip>Skip — we've got your details</button>
+          </div>
+
+          <div class="funnel-status" id="inline-status" hidden role="alert"></div>
+        </form>
+
+        <div class="funnel-success" id="inline-success" hidden>
+          <div class="success-tick">
+            <svg fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"></path></svg>
+          </div>
+          <h3>We'll be in touch!</h3>
+          <p>Usually the same business day.</p>
+        </div>
+
+        <p class="inline-reassure">Or call <a href="tel:1300769337">1300 769 337</a></p>
       </div>
     </div>
   </section>
@@ -853,52 +959,88 @@
     </div>
   </footer>
 
-  <!-- ── Contact modal — markup ported from supportperth.com.au ──── -->
-  <div id="contact-modal" class="hidden" data-od-id="contact-modal" role="dialog" aria-modal="true" aria-labelledby="modal-heading">
-    <div id="modal-backdrop" class="opacity-0"></div>
-    <div id="modal-card" class="opacity-0 translate-y-6">
-      <button id="modal-close-btn" type="button" aria-label="Close">
+  <!-- ── Contact dialog — native <dialog> with two-step funnel ───── -->
+  <dialog id="contact-dialog" aria-labelledby="dialog-heading" data-od-id="contact-dialog">
+    <div class="dialog-card">
+      <button type="button" class="dialog-close" aria-label="Close">
         <svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"></path></svg>
       </button>
-      <h2 id="modal-heading">Get in Touch</h2>
-      <p class="modal-sub">Enter your email or phone number and we'll get back to you ASAP — usually the same day.</p>
-      <p id="modal-symptom" class="modal-symptom hidden"></p>
-      <div id="modal-form-status" class="hidden">
-        <span id="modal-status-icon"></span>
-        <span id="modal-status-body"></span>
+
+      <h2 id="dialog-heading" class="dialog-heading">Get in Touch</h2>
+      <p id="dialog-sub" class="dialog-sub">Enter your email or phone and we'll get back to you — usually the same day.</p>
+
+      <!-- Topic pill (visible when a service card sets context) -->
+      <div class="topic-pill" id="topic-pill">
+        <span id="topic-label"></span>
+        <button type="button" id="topic-clear" aria-label="Clear selected topic">×</button>
       </div>
-      <form id="modal-contact-form" novalidate="">
-        <!-- Honeypot — bots fill it, humans never see it -->
+
+      <form id="dialog-form" class="funnel-form" novalidate>
         <div class="hp-wrap" aria-hidden="true">
-          <input type="text" id="modal_website_url" name="website_url" tabindex="-1" autocomplete="off">
+          <input type="text" name="website_url" tabindex="-1" autocomplete="off">
         </div>
-        <div class="modal-field">
-          <label for="modal-field-email">Email</label>
-          <input type="email" id="modal-field-email" name="email" placeholder="you@example.com" autocomplete="email" inputmode="email">
+        <input type="hidden" name="service" id="dialog-service">
+        <input type="hidden" name="symptom" id="dialog-symptom">
+
+        <!-- Step 1: single contact field -->
+        <div class="funnel-step" data-step="1" id="dialog-step1">
+          <div class="funnel-field">
+            <label for="dialog-contact">Email or phone</label>
+            <input type="text" id="dialog-contact" name="contact" required autofocus
+                   placeholder="you@business.com.au or 04XX XXX XXX"
+                   autocapitalize="none" spellcheck="false" autocomplete="email">
+          </div>
+          <button type="submit" class="funnel-submit">Get in touch</button>
         </div>
-        <div class="modal-field">
-          <label for="modal-field-phone">Phone <span class="opt">(if you'd prefer a call back)</span></label>
-          <input type="tel" id="modal-field-phone" name="phone" placeholder="0400 000 000" autocomplete="tel" inputmode="tel" maxlength="20">
+
+        <!-- Step 2: optional enrichment -->
+        <div class="funnel-step" data-step="2" id="dialog-step2" hidden>
+          <div class="step2-confirm">
+            <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"></path></svg>
+            <p><strong>Got it — we'll be in touch the same business day.</strong><br>These help us come prepared (all optional):</p>
+          </div>
+          <div class="funnel-field">
+            <label for="dialog-name">Your name <span class="opt">(optional)</span></label>
+            <input type="text" id="dialog-name" name="name" placeholder="e.g. Sarah" autocomplete="given-name">
+          </div>
+          <div class="funnel-field">
+            <label for="dialog-need">What do you need help with? <span class="opt">(optional)</span></label>
+            <select id="dialog-need" name="need">
+              <option value="">Select one…</option>
+              <option value="emergency">Site is down / broken right now</option>
+              <option value="maintenance">Ongoing maintenance</option>
+              <option value="build">New site or rebuild</option>
+              <option value="hosting">Hosting or migration</option>
+              <option value="security">Security or malware</option>
+              <option value="speed">Speed / Core Web Vitals</option>
+              <option value="other">Something else</option>
+            </select>
+          </div>
+          <button type="submit" class="funnel-submit">Send</button>
+          <button type="button" class="funnel-skip" data-skip>Skip — we've got your details</button>
         </div>
-        <button type="submit" class="modal-submit">Get in Touch</button>
+
+        <div class="funnel-status" id="dialog-status" hidden role="alert"></div>
       </form>
-      <div id="modal-success" class="hidden">
+
+      <div class="funnel-success" id="dialog-success" hidden>
         <div class="success-tick">
           <svg fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"></path></svg>
         </div>
-        <h3>We'll Be in Touch!</h3>
-        <p>We've received your details and will get back to you shortly.</p>
+        <h3>We'll be in touch!</h3>
+        <p>Usually the same business day.</p>
       </div>
     </div>
-  </div>
+  </dialog>
 
   <script>
-  /* Contact modal — logic ported from supportperth.com.au app.js (initContactModal).
-     Contract: intercept #contact//contact links (except /contact#book), either/or
-     email-phone validation at submit time only, honeypot fakes success, POST to
-     /api/contact, GA4 modal_open/modal_submit + Ads conversion, 3s auto-close. */
+  /* Contact Funnel — two-step capture with native <dialog>, pointerdown triggers,
+     pagehide beacon, dwell/exit-intent auto-open. Per funnel-contact-form skill. */
   (function () {
     'use strict';
+
+    var AUTO_KEY = 'sp_funnel_shown';
+    var PROD_HOST = 'wordpress.supportperth.com.au';
 
     function getABVariant() {
       var stored = localStorage.getItem('sp_ab_variant');
@@ -909,292 +1051,320 @@
       return chosen;
     }
 
-    function validateEmail(value) {
-      var trimmed = (value || '').trim();
-      if (!trimmed) return { valid: false, reason: 'empty' };
-      if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(trimmed)) return { valid: false, reason: 'invalid' };
-      return { valid: true, reason: null };
+    function parseContact(value) {
+      var v = (value || '').trim();
+      if (!v) return { valid: false, type: null, value: null };
+      var isEmail = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(v);
+      var isPhone = /^[+()0-9][0-9\s()\-]{6,}$/.test(v) && v.replace(/\D/g, '').length >= 8;
+      if (isEmail) return { valid: true, type: 'email', value: v };
+      if (isPhone) return { valid: true, type: 'phone', value: v };
+      return { valid: false, type: null, value: v };
     }
 
-    var bookingNudgeFired = false;
-    function nudgeBooking(delay) {
-      // Same guard as the main site: no #book section on this page -> no-op.
-      // If a booking section is ever added with id="book", the nudge activates.
-      if (bookingNudgeFired) return;
-      bookingNudgeFired = true;
-      var bookSection = document.getElementById('book');
-      if (!bookSection) return;
-      setTimeout(function () {
-        var offset = bookSection.getBoundingClientRect().top + window.scrollY - 80;
-        window.scrollTo({ top: offset, behavior: 'smooth' });
-      }, typeof delay === 'undefined' ? 2500 : delay);
+    function postLead(payload, useBeacon) {
+      var body = JSON.stringify(payload);
+      if (useBeacon && navigator.sendBeacon) {
+        navigator.sendBeacon('/api/contact', new Blob([body], { type: 'application/json' }));
+        return Promise.resolve({ success: true });
+      }
+      return fetch('/api/contact', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: body
+      }).then(function (res) { return res.json(); });
     }
 
-    function initContactModal() {
-      var modal = document.getElementById('contact-modal');
-      if (!modal) return;
+    function fireConversion(variant, source) {
+      if (typeof gtag === 'undefined') return;
+      if (location.hostname !== PROD_HOST) return;
+      gtag('event', 'funnel_capture', {
+        event_category: 'engagement',
+        event_label: source + '_' + variant,
+        ab_variant: variant,
+        value: 170,
+        currency: 'AUD'
+      });
+      gtag('event', 'conversion', {
+        send_to: 'AW-17900501163/TgiUCJCpyYUcEKvxz9dC',
+        value: 170.0,
+        currency: 'AUD',
+        transport_type: 'beacon'
+      });
+    }
+
+    function wireTwoStep(opts) {
+      var form = document.getElementById(opts.formId);
+      var step1 = document.getElementById(opts.step1Id);
+      var step2 = document.getElementById(opts.step2Id);
+      var statusEl = document.getElementById(opts.statusId);
+      var successEl = document.getElementById(opts.successId);
+      if (!form || !step1 || !step2) return null;
 
       var variant = getABVariant();
-      var backdrop = modal.querySelector('#modal-backdrop');
-      var card = modal.querySelector('#modal-card');
-      var form = modal.querySelector('#modal-contact-form');
-      var closeBtn = modal.querySelector('#modal-close-btn');
-      var statusBanner = modal.querySelector('#modal-form-status');
-      var successView = modal.querySelector('#modal-success');
+      var captured = false;
+      var sent = false;
+      var capturedPayload = null;
 
-      var modalSubmitting = false;
-      var currentSymptom = null;
-      var lastFocused = null;
-
-      var heading = modal.querySelector('#modal-heading');
-      var subCopy = modal.querySelector('.modal-sub');
-      var symptomChip = modal.querySelector('#modal-symptom');
-      var DEFAULT_HEADING = heading ? heading.textContent : '';
-      var DEFAULT_SUB = subCopy ? subCopy.textContent : '';
-
-      function openModal() {
-        lastFocused = document.activeElement;
-        // Emergency chips carry their symptom into the modal
-        if (currentSymptom) {
-          if (heading) heading.textContent = "Site down? We're on it.";
-          if (subCopy) subCopy.textContent = 'Leave your email or phone — your symptom comes with it, and emergencies jump the queue.';
-          if (symptomChip) {
-            symptomChip.textContent = 'Symptom: ' + currentSymptom;
-            symptomChip.classList.remove('hidden');
-          }
-        } else {
-          if (heading) heading.textContent = DEFAULT_HEADING;
-          if (subCopy) subCopy.textContent = DEFAULT_SUB;
-          if (symptomChip) symptomChip.classList.add('hidden');
-        }
-        modal.classList.remove('hidden');
-        void modal.offsetWidth; // reflow before transition classes
-        backdrop.classList.remove('opacity-0');
-        backdrop.classList.add('opacity-100');
-        card.classList.remove('opacity-0', 'translate-y-6');
-        card.classList.add('opacity-100', 'translate-y-0');
-        document.body.style.overflow = 'hidden';
-        var stickyBar = document.getElementById('sticky-call-bar');
-        if (stickyBar) stickyBar.style.display = 'none';
-        if (typeof gtag !== 'undefined') {
-          gtag('event', 'modal_open', currentSymptom
-            ? { ab_variant: variant, symptom: currentSymptom }
-            : { ab_variant: variant });
-        }
-        var emailField = modal.querySelector('#modal-field-email');
-        if (emailField) setTimeout(function () { emailField.focus(); }, 60);
+      function showStatus(msg) {
+        if (!statusEl) return;
+        statusEl.innerHTML = '<svg width="20" height="20" fill="none" stroke="#dc2626" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 9v4m0 4h.01M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/></svg><span>' + msg + ' You can also reach us at <a href="mailto:support@supportperth.com.au">support@supportperth.com.au</a></span>';
+        statusEl.hidden = false;
       }
 
-      function closeModal() {
-        backdrop.classList.remove('opacity-100');
-        backdrop.classList.add('opacity-0');
-        card.classList.remove('opacity-100', 'translate-y-0');
-        card.classList.add('opacity-0', 'translate-y-6');
-        document.body.style.overflow = '';
-        var stickyBar = document.getElementById('sticky-call-bar');
-        if (stickyBar) stickyBar.style.display = '';
-        setTimeout(function () {
-          modal.classList.add('hidden');
-          if (form) {
-            form.reset();
-            form.style.display = '';
-            form.querySelectorAll('.field-error').forEach(function (el) { el.classList.remove('field-error'); });
-            var submitBtn = form.querySelector('button[type="submit"]');
-            if (submitBtn) {
-              submitBtn.disabled = false;
-              submitBtn.textContent = 'Get in Touch';
+      function hideStatus() { if (statusEl) statusEl.hidden = true; }
+
+      function buildPayload() {
+        var data = new FormData(form);
+        var contact = parseContact(data.get('contact'));
+        var payload = {
+          source: opts.source,
+          ab_variant: variant
+        };
+        if (contact.type === 'email') payload.email = contact.value;
+        else if (contact.type === 'phone') payload.phone = contact.value;
+        var name = (data.get('name') || '').trim();
+        var need = data.get('need') || '';
+        var service = data.get('service') || '';
+        var symptom = data.get('symptom') || '';
+        if (name) payload.name = name;
+        if (need) payload.need = need;
+        if (service) payload.services = [service];
+        if (symptom) payload.message = 'Symptom: ' + symptom;
+        return payload;
+      }
+
+      function advanceToStep2() {
+        step1.hidden = true;
+        step2.hidden = false;
+        var nameField = step2.querySelector('input[name="name"]');
+        if (nameField) nameField.focus();
+      }
+
+      function showSuccess() {
+        form.hidden = true;
+        if (successEl) successEl.hidden = false;
+      }
+
+      function submit(final) {
+        if (sent) return;
+        sent = true;
+        var payload = buildPayload();
+        postLead(payload, false)
+          .then(function (r) {
+            if (r && r.success) {
+              showSuccess();
+              if (opts.onSuccess) opts.onSuccess();
+            } else {
+              throw new Error(r && r.message || 'Failed');
             }
-          }
-          if (statusBanner) statusBanner.classList.add('hidden');
-          if (successView) successView.classList.add('hidden');
-          if (symptomChip) symptomChip.classList.add('hidden');
-          if (heading) heading.textContent = DEFAULT_HEADING;
-          if (subCopy) subCopy.textContent = DEFAULT_SUB;
-          currentSymptom = null;
-          modalSubmitting = false;
-        }, 300);
-        if (lastFocused && lastFocused.focus) {
-          try { lastFocused.focus(); } catch (_) {}
-        }
-      }
-
-      if (closeBtn) closeBtn.addEventListener('click', closeModal);
-      if (backdrop) backdrop.addEventListener('click', closeModal);
-      document.addEventListener('keydown', function (e) {
-        if (modal.classList.contains('hidden')) return;
-        if (e.key === 'Escape') { closeModal(); return; }
-        // Keep Tab focus inside the open dialog
-        if (e.key === 'Tab') {
-          var focusables = card.querySelectorAll('button, input, a[href]');
-          var list = Array.prototype.filter.call(focusables, function (el) {
-            return !el.disabled && el.offsetParent !== null;
+          })
+          .catch(function (err) {
+            sent = false;
+            showStatus(err.message || 'Something went wrong.');
           });
-          if (!list.length) return;
-          var first = list[0];
-          var last = list[list.length - 1];
-          if (e.shiftKey && document.activeElement === first) { e.preventDefault(); last.focus(); }
-          else if (!e.shiftKey && document.activeElement === last) { e.preventDefault(); first.focus(); }
-        }
-      });
-
-      // Intercept #contact and /contact links (skip /contact#book)
-      document.querySelectorAll('a[href="#contact"], a[href="/contact"]').forEach(function (link) {
-        var href = link.getAttribute('href');
-        if (href && href.indexOf('#book') !== -1) return;
-        link.addEventListener('click', function (e) {
-          e.preventDefault();
-          currentSymptom = link.getAttribute('data-symptom') || null;
-          openModal();
-        });
-      });
-
-      function setModalStatus(state, message) {
-        if (!statusBanner) return;
-        var icon = statusBanner.querySelector('#modal-status-icon');
-        var body = statusBanner.querySelector('#modal-status-body');
-        var errorIcon = '<svg width="20" height="20" fill="none" stroke="#dc2626" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 9v4m0 4h.01M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/></svg>';
-        statusBanner.classList.remove('hidden');
-        if (icon) icon.innerHTML = errorIcon;
-        if (state === 'error') {
-          var prefix = message
-            ? '<strong>Error:</strong> ' + document.createElement('span').appendChild(document.createTextNode(message)).parentNode.innerHTML + '. '
-            : 'Something went wrong. ';
-          if (body) {
-            body.innerHTML = prefix
-              + 'You can also reach us at <a href="mailto:support@supportperth.com.au">support@supportperth.com.au</a>';
-          }
-        } else {
-          if (body) body.textContent = message || '';
-        }
       }
-
-      if (!form) return;
 
       form.addEventListener('submit', function (e) {
         e.preventDefault();
-        if (modalSubmitting) return;
+        hideStatus();
 
-        if (statusBanner) statusBanner.classList.add('hidden');
-        form.querySelectorAll('.field-error').forEach(function (el) { el.classList.remove('field-error'); });
+        var hp = form.querySelector('input[name="website_url"]');
+        if (hp && hp.value) { showSuccess(); return; }
 
-        // Honeypot: silently fake success
-        var honeypot = form.querySelector('#modal_website_url');
-        if (honeypot && honeypot.value) {
-          form.style.display = 'none';
-          if (successView) successView.classList.remove('hidden');
-          return;
-        }
-
-        // Either/or validation — nothing is checked before this moment
-        var emailInput = form.querySelector('#modal-field-email');
-        var phoneInput = form.querySelector('#modal-field-phone');
-        var phoneValue = phoneInput ? phoneInput.value.trim() : '';
-        var errors = [];
-        var emailCheck = validateEmail(emailInput ? emailInput.value : '');
-        if (!emailCheck.valid) {
-          if (emailCheck.reason === 'empty' && phoneValue) {
-            // Phone-only submission is fine
-          } else {
-            if (emailInput) emailInput.classList.add('field-error');
-            errors.push(emailCheck.reason === 'empty'
-              ? 'Please enter your email address or phone number.'
-              : 'Please enter a valid email address.');
+        if (!captured) {
+          var contactInput = form.querySelector('input[name="contact"]');
+          var parsed = parseContact(contactInput ? contactInput.value : '');
+          if (!parsed.valid) {
+            if (contactInput) contactInput.classList.add('field-error');
+            showStatus('Please enter a valid email address or phone number.');
+            if (contactInput) contactInput.focus();
+            return;
           }
-        }
-
-        if (errors.length > 0) {
-          setModalStatus('validation', errors[0]);
-          var firstError = form.querySelector('.field-error');
-          if (firstError) firstError.focus();
+          if (contactInput) contactInput.classList.remove('field-error');
+          captured = true;
+          capturedPayload = buildPayload();
+          fireConversion(variant, opts.source);
+          advanceToStep2();
           return;
         }
 
-        // Submit
-        modalSubmitting = true;
-        var submitBtn = form.querySelector('button[type="submit"]');
-        var originalText = submitBtn ? submitBtn.textContent : '';
-        if (submitBtn) {
-          submitBtn.disabled = true;
-          submitBtn.textContent = '';
-          var spinner = document.createElement('span');
-          spinner.style.cssText = 'display:inline-flex;align-items:center;gap:8px;';
-          spinner.innerHTML = '<svg class="spin" width="18" height="18" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle style="opacity:.25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path style="opacity:.75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.37 0 0 5.37 0 12h4z"></path></svg>';
-          spinner.appendChild(document.createTextNode('Sending…'));
-          submitBtn.appendChild(spinner);
-        }
-        form.querySelectorAll('input, button').forEach(function (el) { el.disabled = true; });
-
-        var payload = {
-          email: emailInput.value.trim(),
-          phone: phoneValue,
-          source: currentSymptom ? 'modal-emergency' : 'modal',
-          ab_variant: variant
-        };
-        // The ported backend already accepts an optional message field
-        if (currentSymptom) payload.message = 'Symptom: ' + currentSymptom;
-
-        fetch('/api/contact', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(payload)
-        })
-          .then(function (res) {
-            return res.json().then(function (result) { return { res: res, result: result }; });
-          })
-          .then(function (r) {
-            if (!r.res.ok || !r.result.success) {
-              throw new Error(r.result.message || 'Submission failed');
-            }
-            if (typeof gtag !== 'undefined') {
-              // modal_submit only — form_submit is reserved for page forms
-              gtag('event', 'modal_submit', {
-                event_category: 'engagement',
-                event_label: 'modal_' + variant,
-                ab_variant: variant,
-                value: 170,
-                currency: 'AUD'
-              });
-              gtag('event', 'conversion', {
-                send_to: 'AW-17900501163/TgiUCJCpyYUcEKvxz9dC',
-                value: 170.0,
-                currency: 'AUD',
-                transport_type: 'beacon'
-              });
-            }
-            form.style.display = 'none';
-            if (statusBanner) statusBanner.classList.add('hidden');
-            if (successView) successView.classList.remove('hidden');
-            setTimeout(function () {
-              closeModal();
-              nudgeBooking(500);
-            }, 3000);
-          })
-          .catch(function (err) {
-            console.error('Modal contact submit failed:', err);
-            setModalStatus('error', err.message);
-            form.querySelectorAll('input, button').forEach(function (el) { el.disabled = false; });
-            if (submitBtn) {
-              submitBtn.disabled = false;
-              submitBtn.textContent = originalText;
-            }
-            modalSubmitting = false;
-          });
+        submit(true);
       });
 
-      // Typing only clears previous error styling — no as-you-type validation
-      var modalEmailInput = form.querySelector('#modal-field-email');
-      if (modalEmailInput) {
-        modalEmailInput.addEventListener('input', function () {
-          modalEmailInput.classList.remove('field-error');
-          if (statusBanner) statusBanner.classList.add('hidden');
+      var skipBtn = form.querySelector('[data-skip]');
+      if (skipBtn) {
+        skipBtn.addEventListener('click', function () {
+          submit(true);
         });
       }
+
+      var contactInput = form.querySelector('input[name="contact"]');
+      if (contactInput) {
+        contactInput.addEventListener('input', function () {
+          contactInput.classList.remove('field-error');
+          hideStatus();
+        });
+      }
+
+      window.addEventListener('pagehide', function () {
+        if (captured && !sent) {
+          sent = true;
+          postLead(capturedPayload || buildPayload(), true);
+        }
+      });
+
+      return {
+        reset: function () {
+          captured = false;
+          sent = false;
+          capturedPayload = null;
+          form.reset();
+          form.hidden = false;
+          step1.hidden = false;
+          step2.hidden = true;
+          if (successEl) successEl.hidden = true;
+          hideStatus();
+        },
+        isStep2Visible: function () { return !step2.hidden; }
+      };
+    }
+
+    function initFunnel() {
+      var dialog = document.getElementById('contact-dialog');
+      var inlineFunnel = document.getElementById('inline-funnel');
+      var topicPill = document.getElementById('topic-pill');
+      var topicLabel = document.getElementById('topic-label');
+      var topicClear = document.getElementById('topic-clear');
+      var dialogService = document.getElementById('dialog-service');
+      var dialogSymptom = document.getElementById('dialog-symptom');
+      var dialogHeading = document.getElementById('dialog-heading');
+      var dialogSub = document.getElementById('dialog-sub');
+
+      var DEFAULT_HEADING = 'Get in Touch';
+      var DEFAULT_SUB = 'Enter your email or phone and we\'ll get back to you — usually the same day.';
+
+      var dialogFunnel = wireTwoStep({
+        formId: 'dialog-form',
+        step1Id: 'dialog-step1',
+        step2Id: 'dialog-step2',
+        statusId: 'dialog-status',
+        successId: 'dialog-success',
+        source: 'dialog',
+        onSuccess: function () {
+          setTimeout(function () { if (dialog && dialog.open) dialog.close(); }, 3000);
+        }
+      });
+
+      var inlineFunnelWire = wireTwoStep({
+        formId: 'inline-form',
+        step1Id: 'inline-step1',
+        step2Id: 'inline-step2',
+        statusId: 'inline-status',
+        successId: 'inline-success',
+        source: 'inline'
+      });
+
+      function openDialog(symptom, service) {
+        if (!dialog) return;
+        if (dialogFunnel) dialogFunnel.reset();
+        if (symptom) {
+          if (dialogHeading) dialogHeading.textContent = "Site down? We're on it.";
+          if (dialogSub) dialogSub.textContent = 'Leave your email or phone — your symptom comes with it, and emergencies jump the queue.';
+          if (dialogSymptom) dialogSymptom.value = symptom;
+          if (topicLabel) topicLabel.textContent = 'Symptom: ' + symptom;
+          if (topicPill) topicPill.classList.add('show');
+        } else if (service) {
+          if (dialogHeading) dialogHeading.textContent = DEFAULT_HEADING;
+          if (dialogSub) dialogSub.textContent = DEFAULT_SUB;
+          if (dialogService) dialogService.value = service;
+          if (topicLabel) topicLabel.textContent = 'Enquiry: ' + service;
+          if (topicPill) topicPill.classList.add('show');
+        } else {
+          if (dialogHeading) dialogHeading.textContent = DEFAULT_HEADING;
+          if (dialogSub) dialogSub.textContent = DEFAULT_SUB;
+          if (topicPill) topicPill.classList.remove('show');
+        }
+        dialog.showModal();
+        if (typeof gtag !== 'undefined' && location.hostname === PROD_HOST) {
+          gtag('event', 'dialog_open', { symptom: symptom || '', service: service || '' });
+        }
+      }
+
+      if (dialog) {
+        dialog.addEventListener('click', function (e) {
+          if (e.target === dialog) dialog.close();
+        });
+        dialog.addEventListener('close', function () {
+          sessionStorage.setItem(AUTO_KEY, '1');
+          if (dialogFunnel) dialogFunnel.reset();
+          if (dialogService) dialogService.value = '';
+          if (dialogSymptom) dialogSymptom.value = '';
+          if (topicPill) topicPill.classList.remove('show');
+        });
+        var closeBtn = dialog.querySelector('.dialog-close');
+        if (closeBtn) closeBtn.addEventListener('click', function () { dialog.close(); });
+      }
+
+      if (topicClear) {
+        topicClear.addEventListener('click', function () {
+          if (topicPill) topicPill.classList.remove('show');
+          if (dialogService) dialogService.value = '';
+          if (dialogSymptom) dialogSymptom.value = '';
+        });
+      }
+
+      document.querySelectorAll('a[href="#contact"]').forEach(function (link) {
+        link.addEventListener('click', function (e) {
+          e.preventDefault();
+          var symptom = link.getAttribute('data-symptom') || null;
+          var service = link.getAttribute('data-service') || null;
+          openDialog(symptom, service);
+        });
+      });
+
+      if (inlineFunnel) {
+        inlineFunnel.addEventListener('pointerdown', function (e) {
+          if (inlineFunnelWire && inlineFunnelWire.isStep2Visible()) return;
+          e.preventDefault();
+          if (dialog && dialog.open) return;
+          openDialog(null, null);
+          var swallow = function (ce) { ce.stopPropagation(); ce.preventDefault(); };
+          document.addEventListener('click', swallow, { capture: true, once: true });
+          setTimeout(function () {
+            document.removeEventListener('click', swallow, { capture: true });
+          }, 600);
+        });
+      }
+
+      function autoShow(trigger) {
+        if (sessionStorage.getItem(AUTO_KEY)) return;
+        if (dialog && dialog.open) return;
+        sessionStorage.setItem(AUTO_KEY, '1');
+        openDialog(null, null);
+        if (typeof gtag !== 'undefined' && location.hostname === PROD_HOST) {
+          gtag('event', 'dialog_auto', { trigger: trigger });
+        }
+      }
+
+      setTimeout(function () {
+        var el = document.activeElement;
+        var typing = el && /^(INPUT|TEXTAREA|SELECT)$/.test(el.tagName);
+        var midFlow = inlineFunnelWire && inlineFunnelWire.isStep2Visible();
+        if (!typing && !midFlow) autoShow('dwell_10s');
+      }, 10000);
+
+      document.addEventListener('mouseout', function (e) {
+        if (e.clientY > 50) return;
+        if (!e.relatedTarget && e.toElement == null) {
+          autoShow('exit_intent');
+        }
+      });
     }
 
     if (document.readyState === 'loading') {
-      document.addEventListener('DOMContentLoaded', initContactModal);
+      document.addEventListener('DOMContentLoaded', initFunnel);
     } else {
-      initContactModal();
+      initFunnel();
     }
   })();
 
